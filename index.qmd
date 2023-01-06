@@ -152,7 +152,7 @@ We can train our own word embeddings. But there are also several pretrained word
 * [GLoVe](https://nlp.stanford.edu/projects/glove/) trained on Wikipedia, Common Crawl, and Gigaword
 * [fastText](https://fasttext.cc/docs/en/crawl-vectors.html) trained on Wikipedia and Common Crawl
 
-In the following example, we will use the pretrained GLoVe word embeddings to replicate the findings by @caliskan:2017:S and pretrained word2vec word embeddings to replicate the findings from @garg:2018:W. The R package `sweater` can be used to read the downloaded word embedding file.
+In the following example, we will use the pretrained GLoVe word embeddings to replicate the findings by @caliskan:2017:S and pretrained word2vec word embeddings to replicate the findings from @garg:2018:W. The R package `sweater` [@chan:2022] can be used to read the downloaded word embedding file.
 
 ```r
 require(sweater)

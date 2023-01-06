@@ -197,20 +197,20 @@ matrix as a multidimensional *word embedding space*.
 dense_vectors
 ```
 
-                   [,1]         [,2]        [,3]       [,4]          [,5]
-    berlin   0.78575573  0.209449896 -0.08620717  0.4810066  0.2093542991
-    is       1.08306380  1.011948448 -1.07316722 -0.1653454  0.8507408428
-    the     -0.79546087  0.350269581 -1.09203235 -0.7330375 -0.1458362581
-    capital -1.57016718  0.280735042 -0.97364779 -0.3632533 -0.5824845529
-    of      -1.11435374 -0.315530822 -0.12913613  0.2808420 -0.1385013789
-    germany  0.08477547  0.040455887  0.58762156  0.4584985  0.5292880748
-    paris    1.55654814  0.562762419 -0.73036962  0.2407152  0.5385027443
-    france   0.10809809 -0.004958774  1.01187392  0.2139561  0.3483963429
-    tokyo    0.28294068 -0.824519150  0.97639189  0.3816728  0.7321510160
-    japan   -0.17862587 -0.047477128  0.89898796  0.3818020  0.0002484632
-    cat      0.15095827 -0.218824880 -0.22817070  0.5317277 -0.2671589948
-    weird    0.46136211  0.230470371  0.02946759 -0.2593496  0.2703676254
-    nice     0.81104146  0.497514622  0.17901581 -0.2559860  0.6224911659
+                   [,1]         [,2]         [,3]       [,4]        [,5]
+    berlin   0.80262728  0.201886942 -0.050109327  0.4373500  0.17833629
+    is       1.14967505  1.006083473 -0.984309391 -0.2084308  0.73528363
+    the     -0.72458111  0.375025682 -1.073569604 -0.6517146 -0.09048667
+    capital -1.65402699  0.301387259 -1.057786678 -0.2847850 -0.49744521
+    of      -1.13262361 -0.315563979 -0.152375159  0.3592011 -0.08956291
+    germany  0.08003856  0.026181508  0.594589913  0.4290679  0.48627786
+    paris    1.60602323  0.566585680 -0.657495808  0.1923298  0.46898085
+    france   0.12381134  0.004528143  1.043032957  0.1630011  0.30064101
+    tokyo    0.29778797 -0.849347989  1.011065002  0.3229865  0.72311847
+    japan   -0.16005291 -0.038303975  0.926258832  0.3460661 -0.01279459
+    cat      0.13362459 -0.229537453 -0.221444686  0.5473237 -0.24980748
+    weird    0.43234735  0.234490911  0.007090014 -0.2719604  0.20296744
+    nice     0.81277455  0.475324464  0.191525041 -0.2664043  0.58516716
 
 And the row vectors can be compared using cosine similarity. Now, we can
 see that the similarity between “berlin” and “paris” is higher than
@@ -221,14 +221,14 @@ cosine(dense_vectors["berlin",], dense_vectors["paris",])
 ```
 
               [,1]
-    [1,] 0.8829959
+    [1,] 0.8872842
 
 ``` r
 cosine(dense_vectors["berlin",], dense_vectors["cat",])
 ```
 
               [,1]
-    [1,] 0.4356691
+    [1,] 0.4029574
 
 ## Target words and attribute words
 
@@ -245,21 +245,21 @@ cosine(dense_vectors["paris",], dense_vectors["nice",])
 ```
 
               [,1]
-    [1,] 0.7510857
+    [1,] 0.7632924
 
 ``` r
 cosine(dense_vectors["tokyo",], dense_vectors["nice",])
 ```
 
-              [,1]
-    [1,] 0.1929587
+            [,1]
+    [1,] 0.20355
 
 ``` r
 cosine(dense_vectors["berlin",], dense_vectors["nice",])
 ```
 
-              [,1]
-    [1,] 0.6400528
+             [,1]
+    [1,] 0.658594
 
 ## Pretrained word embeddings
 
@@ -277,8 +277,8 @@ download.
 In the following example, we will use the pretrained GLoVe word
 embeddings to replicate the findings by Caliskan et al. (2017) and
 pretrained word2vec word embeddings to replicate the findings from Garg
-et al. (2018). The R package `sweater` can be used to read the
-downloaded word embedding file.
+et al. (2018). The R package `sweater` (Chan, 2022) can be used to read
+the downloaded word embedding file.
 
 ``` r
 require(sweater)
@@ -445,6 +445,14 @@ Caliskan, A., Bryson, J. J., & Narayanan, A. (2017). Semantics derived
 automatically from language corpora contain human-like biases.
 *Science*, *356*(6334), 183–186.
 <https://doi.org/10.1126/science.aal4230>
+
+</div>
+
+<div id="ref-chan:2022" class="csl-entry">
+
+Chan, C. (2022). Sweater: Speedy word embedding association test and
+extras using R. *Journal of Open Source Software*, *7*(72), 4036.
+<https://doi.org/10.21105/joss.04036>
 
 </div>
 
