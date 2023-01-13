@@ -15,9 +15,9 @@ set.seed(721831)
 
 In this Methods Hub entry, I am going to show you how to test for implicit associations using word embeddings trained on a large language corpus.
 
-## One-hot vectors
+## Cosine distance
 
-In the traditional "bag of words" text representation, a word is presented as a so-called "one-hot" vector. For example, in a simple corpus of 10 documents:
+Suppose we have the following corpus of 10 documents:
 
 **Doc 1**: berlin is the capital of germany
 
@@ -54,10 +54,72 @@ The unique token types are: "berlin", "is", "the", "capital", "of", "germany", "
 | 9  | 0      | 1  | 0   | 0       | 0  | 0       | 1     | 0      | 0     | 0     | 0   | 0     | 1    |
 | 10 | 1      | 1  | 0   | 0       | 0  | 0       | 0     | 0      | 0     | 0     | 0   | 1     | 0    |
 
-The fifth document has just one word of "berlin". This document is represented as a row vector of `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the document-term matrix. This vector is sparse (many zeros). One can also reason it as the "one-hot" vector representation of the word "berlin", because there is exactly one instance of "1" in the entire vector. One-hot vector representation of word is not very useful for comparison. For example, cosine similarity of "one-hot" vectors of two different words is always 0.
+The row vector is the vector representation of the document. One way to compare the similarity between two **documents** is to calculate the cosine similarity. Cosine similarity between two vectors ($\mathbf{A}$, $\mathbf{B}$) is defined as:
+
+$$
+\cos(\theta) = {\mathbf{A} \cdot \mathbf{B} \over \|\mathbf{A}\| \|\mathbf{B}\|}
+$$
+
+For example, the cosine similarity between *Doc 1* `[1,1,1,1,1,1,0,0,0,0,0,0,0]` and *Doc 2* `[0,1,1,1,1,0,1,1,0,0,0,0,0]` is:
+
+$$
+\begin{align}
+\mathbf{A} \cdot \mathbf{B} &= 1 \times 0 + 1 \times 1 + 1 \times 1 +1 \times 1 +1 \times 1 + 1 \times 0 + 0 \times 1 + 0 \times 1 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 \\
+&= 4\\
+\|\mathbf{A}\| &= \sqrt{1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2} \\
+&= \sqrt{6}\\
+\|\mathbf{B}\| &= \sqrt{0^2 + 1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 1^2 + 1^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2} \\
+&= \sqrt{6}\\
+\cos(\theta) &= { 4 \over \sqrt{6} \times \sqrt{6}}\\
+&= 0.\overline{6}
+\end{align}
+$$
+
+In R, `lsa` [@lsarpackage] can be used to calculate cosine similarity.
+
+```{r cosine1}
+library(lsa)
+doc1 <- c(1,1,1,1,1,1,0,0,0,0,0,0,0)
+doc2 <- c(0,1,1,1,1,0,1,1,0,0,0,0,0)
+cosine(doc1, doc2)
+```
+
+Or using `quanteda` [@benoit:2018]
+
+```{r quanteda}
+require(quanteda)
+docs <- c("berlin is the capital of germany",
+          "paris is the capital of france",
+          "tokyo is the capital of japan",
+          "the cat is weird",
+          "berlin",
+          "paris is nice",
+          "paris is nice",
+          "paris is nice",
+          "paris is nice",
+          "berlin is weird")
+docs_dtm <- corpus(docs) %>% tokens %>% dfm()
+docs_dtm
+```
+
+```{r quantedacosine}
+cosine(as.vector(docs_dtm[1,]), as.vector(docs_dtm[2,]))
+```
+
+The cosine similarity between *Doc 1* and *Doc 6* is much lower, as there is just one common word *"is"*.
+
+```{r cosine2}
+doc6 <- c(0,1,0,0,0,0,1,0,0,0,0,0,1)
+##or
+##cosine(as.vector(docs_dtm[1,]), as.vector(docs_dtm[6,]))
+cosine(doc1, doc6)
+```
+
+## One-hot vectors
+
+In the traditional "bag of words" text representation, a word is presented as a so-called "one-hot" vector. In the above example, the fifth document has just one word of "berlin". This document is represented as row vector `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the document-term matrix. This vector is sparse (many zeros). One can also reason it as the "one-hot" vector representation of the word "berlin", because there is exactly one instance of "1" in the entire vector. One-hot vector representation of word is not very useful for comparison between **words**. For example, cosine similarity of "one-hot" vectors of two different words is always 0.
 
 ```{r allzero}
-library(lsa)
 ## comparing "berlin" and "paris"
 cosine(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
        c(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0))
@@ -86,21 +148,11 @@ The FCM is a square matrix with each cell represents how likely two words are co
 
 ```{r fcm}
 #| warning: false
-library(quanteda)
 WINDOW_SIZE <- 3
 
-docs <- c("berlin is the capital of germany",
-          "paris is the capital of france",
-          "tokyo is the capital of japan",
-          "the cat is weird",
-          "berlin",
-          "paris is nice",
-          "paris is nice",
-          "paris is nice",
-          "paris is nice",
-          "berlin is weird")
-
-weighted_fcm_corpus <- corpus(docs) %>% tokens() %>% fcm(window = WINDOW_SIZE, weights = 1 / seq_len(WINDOW_SIZE), count = "weighted", context = "window", tri = TRUE)
+weighted_fcm_corpus <- corpus(docs) %>% tokens() %>%
+    fcm(window = WINDOW_SIZE, weights = 1 / seq_len(WINDOW_SIZE),
+        count = "weighted", context = "window", tri = TRUE)
 weighted_fcm_corpus
 ```
 

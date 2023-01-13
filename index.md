@@ -8,11 +8,9 @@ In this Methods Hub entry, I am going to show you how to test for
 implicit associations using word embeddings trained on a large language
 corpus.
 
-## One-hot vectors
+## Cosine distance
 
-In the traditional “bag of words” text representation, a word is
-presented as a so-called “one-hot” vector. For example, in a simple
-corpus of 10 documents:
+Suppose we have the following corpus of 10 documents:
 
 **Doc 1**: berlin is the capital of germany
 
@@ -51,20 +49,123 @@ The representation of the above corpus as a document-term matrix is:
 | 9   | 0      | 1   | 0   | 0       | 0   | 0       | 1     | 0      | 0     | 0     | 0   | 0     | 1    |
 | 10  | 1      | 1   | 0   | 0       | 0   | 0       | 0     | 0      | 0     | 0     | 0   | 1     | 0    |
 
-The fifth document has just one word of “berlin”. This document is
-represented as a row vector of `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the
-document-term matrix. This vector is sparse (many zeros). One can also
-reason it as the “one-hot” vector representation of the word “berlin”,
-because there is exactly one instance of “1” in the entire vector.
-One-hot vector representation of word is not very useful for comparison.
-For example, cosine similarity of “one-hot” vectors of two different
-words is always 0.
+The row vector is the vector representation of the document. One way to
+compare the similarity between two **documents** is to calculate the
+cosine similarity. Cosine similarity between two vectors ($\mathbf{A}$,
+$\mathbf{B}$) is defined as:
+
+$$
+\cos(\theta) = {\mathbf{A} \cdot \mathbf{B} \over \|\mathbf{A}\| \|\mathbf{B}\|}
+$$
+
+For example, the cosine similarity between *Doc 1*
+`[1,1,1,1,1,1,0,0,0,0,0,0,0]` and *Doc 2* `[0,1,1,1,1,0,1,1,0,0,0,0,0]`
+is:
+
+$$
+\begin{align}
+\mathbf{A} \cdot \mathbf{B} &= 1 \times 0 + 1 \times 1 + 1 \times 1 +1 \times 1 +1 \times 1 + 1 \times 0 + 0 \times 1 + 0 \times 1 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 \\
+&= 4\\
+\|\mathbf{A}\| &= \sqrt{1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2} \\
+&= \sqrt{6}\\
+\|\mathbf{B}\| &= \sqrt{0^2 + 1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 1^2 + 1^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2} \\
+&= \sqrt{6}\\
+\cos(\theta) &= { 4 \over \sqrt{6} \times \sqrt{6}}\\
+&= 0.\overline{6}
+\end{align}
+$$
+
+In R, `lsa` (Wild, 2022) can be used to calculate cosine similarity.
 
 ``` r
 library(lsa)
 ```
 
     Loading required package: SnowballC
+
+``` r
+doc1 <- c(1,1,1,1,1,1,0,0,0,0,0,0,0)
+doc2 <- c(0,1,1,1,1,0,1,1,0,0,0,0,0)
+cosine(doc1, doc2)
+```
+
+              [,1]
+    [1,] 0.6666667
+
+Or using `quanteda` (Benoit et al., 2018)
+
+``` r
+require(quanteda)
+```
+
+    Loading required package: quanteda
+
+    Package version: 3.2.4
+    Unicode version: 14.0
+    ICU version: 70.1
+
+    Parallel computing: 16 of 16 threads used.
+
+    See https://quanteda.io for tutorials and examples.
+
+``` r
+docs <- c("berlin is the capital of germany",
+          "paris is the capital of france",
+          "tokyo is the capital of japan",
+          "the cat is weird",
+          "berlin",
+          "paris is nice",
+          "paris is nice",
+          "paris is nice",
+          "paris is nice",
+          "berlin is weird")
+docs_dtm <- corpus(docs) %>% tokens %>% dfm()
+docs_dtm
+```
+
+    Document-feature matrix of: 10 documents, 13 features (70.77% sparse) and 0 docvars.
+           features
+    docs    berlin is the capital of germany paris france tokyo japan
+      text1      1  1   1       1  1       1     0      0     0     0
+      text2      0  1   1       1  1       0     1      1     0     0
+      text3      0  1   1       1  1       0     0      0     1     1
+      text4      0  1   1       0  0       0     0      0     0     0
+      text5      1  0   0       0  0       0     0      0     0     0
+      text6      0  1   0       0  0       0     1      0     0     0
+    [ reached max_ndoc ... 4 more documents, reached max_nfeat ... 3 more features ]
+
+``` r
+cosine(as.vector(docs_dtm[1,]), as.vector(docs_dtm[2,]))
+```
+
+              [,1]
+    [1,] 0.6666667
+
+The cosine similarity between *Doc 1* and *Doc 6* is much lower, as
+there is just one common word *“is”*.
+
+``` r
+doc6 <- c(0,1,0,0,0,0,1,0,0,0,0,0,1)
+##or
+##cosine(as.vector(docs_dtm[1,]), as.vector(docs_dtm[6,]))
+cosine(doc1, doc6)
+```
+
+              [,1]
+    [1,] 0.2357023
+
+## One-hot vectors
+
+In the traditional “bag of words” text representation, a word is
+presented as a so-called “one-hot” vector. In the above example, the
+fifth document has just one word of “berlin”. This document is
+represented as row vector `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the
+document-term matrix. This vector is sparse (many zeros). One can also
+reason it as the “one-hot” vector representation of the word “berlin”,
+because there is exactly one instance of “1” in the entire vector.
+One-hot vector representation of word is not very useful for comparison
+between **words**. For example, cosine similarity of “one-hot” vectors
+of two different words is always 0.
 
 ``` r
 ## comparing "berlin" and "paris"
@@ -129,21 +230,11 @@ The FCM is a square matrix with each cell represents how likely two
 words are cooccured.
 
 ``` r
-library(quanteda)
 WINDOW_SIZE <- 3
 
-docs <- c("berlin is the capital of germany",
-          "paris is the capital of france",
-          "tokyo is the capital of japan",
-          "the cat is weird",
-          "berlin",
-          "paris is nice",
-          "paris is nice",
-          "paris is nice",
-          "paris is nice",
-          "berlin is weird")
-
-weighted_fcm_corpus <- corpus(docs) %>% tokens() %>% fcm(window = WINDOW_SIZE, weights = 1 / seq_len(WINDOW_SIZE), count = "weighted", context = "window", tri = TRUE)
+weighted_fcm_corpus <- corpus(docs) %>% tokens() %>%
+    fcm(window = WINDOW_SIZE, weights = 1 / seq_len(WINDOW_SIZE),
+        count = "weighted", context = "window", tri = TRUE)
 weighted_fcm_corpus
 ```
 
@@ -197,20 +288,20 @@ matrix as a multidimensional *word embedding space*.
 dense_vectors
 ```
 
-                   [,1]         [,2]         [,3]       [,4]        [,5]
-    berlin   0.80262728  0.201886942 -0.050109327  0.4373500  0.17833629
-    is       1.14967505  1.006083473 -0.984309391 -0.2084308  0.73528363
-    the     -0.72458111  0.375025682 -1.073569604 -0.6517146 -0.09048667
-    capital -1.65402699  0.301387259 -1.057786678 -0.2847850 -0.49744521
-    of      -1.13262361 -0.315563979 -0.152375159  0.3592011 -0.08956291
-    germany  0.08003856  0.026181508  0.594589913  0.4290679  0.48627786
-    paris    1.60602323  0.566585680 -0.657495808  0.1923298  0.46898085
-    france   0.12381134  0.004528143  1.043032957  0.1630011  0.30064101
-    tokyo    0.29778797 -0.849347989  1.011065002  0.3229865  0.72311847
-    japan   -0.16005291 -0.038303975  0.926258832  0.3460661 -0.01279459
-    cat      0.13362459 -0.229537453 -0.221444686  0.5473237 -0.24980748
-    weird    0.43234735  0.234490911  0.007090014 -0.2719604  0.20296744
-    nice     0.81277455  0.475324464  0.191525041 -0.2664043  0.58516716
+                   [,1]        [,2]        [,3]       [,4]        [,5]
+    berlin   0.79614244  0.22100394 -0.04591896  0.4556890  0.15480161
+    is       1.13656327  1.05899330 -1.01826899 -0.2009622  0.77871210
+    the     -0.77156245  0.33601709 -1.14306990 -0.7275666 -0.10468032
+    capital -1.58387625  0.20885509 -1.08517281 -0.3583536 -0.48295534
+    of      -1.11934441 -0.34707365 -0.18234921  0.3094981 -0.09920230
+    germany  0.07882286  0.04828313  0.59828524  0.4671641  0.48562797
+    paris    1.58021559  0.61638033 -0.67236751  0.2355874  0.43853601
+    france   0.10239900  0.01998557  1.04638993  0.2073628  0.28749860
+    tokyo    0.31521318 -0.80405836  0.99720752  0.3598921  0.70531453
+    japan   -0.18416400 -0.02768461  0.93654561  0.3740573 -0.05894862
+    cat      0.16716063 -0.22943637 -0.23981760  0.5273879 -0.24733204
+    weird    0.46320193  0.23785790  0.03342814 -0.2715042  0.23845382
+    nice     0.82393327  0.49434728  0.18686917 -0.2592552  0.61315755
 
 And the row vectors can be compared using cosine similarity. Now, we can
 see that the similarity between “berlin” and “paris” is higher than
@@ -221,14 +312,14 @@ cosine(dense_vectors["berlin",], dense_vectors["paris",])
 ```
 
               [,1]
-    [1,] 0.8872842
+    [1,] 0.8839631
 
 ``` r
 cosine(dense_vectors["berlin",], dense_vectors["cat",])
 ```
 
               [,1]
-    [1,] 0.4029574
+    [1,] 0.4466431
 
 ## Target words and attribute words
 
@@ -245,21 +336,21 @@ cosine(dense_vectors["paris",], dense_vectors["nice",])
 ```
 
               [,1]
-    [1,] 0.7632924
+    [1,] 0.7543457
 
 ``` r
 cosine(dense_vectors["tokyo",], dense_vectors["nice",])
 ```
 
-            [,1]
-    [1,] 0.20355
+              [,1]
+    [1,] 0.2128859
 
 ``` r
 cosine(dense_vectors["berlin",], dense_vectors["nice",])
 ```
 
-             [,1]
-    [1,] 0.658594
+              [,1]
+    [1,] 0.6471945
 
 ## Pretrained word embeddings
 
@@ -471,6 +562,13 @@ Pennington, J., Socher, R., & Manning, C. (2014). Glove: Global vectors
 for word representation. *Proceedings of the 2014 Conference on
 Empirical Methods in Natural Language Processing (EMNLP)*.
 <https://doi.org/10.3115/v1/d14-1162>
+
+</div>
+
+<div id="ref-lsarpackage" class="csl-entry">
+
+Wild, F. (2022). *Lsa: Latent semantic analysis*.
+<https://CRAN.R-project.org/package=lsa>
 
 </div>
 
