@@ -15,6 +15,18 @@ set.seed(721831)
 
 In this Methods Hub entry, I am going to show you how to test for implicit associations using word embeddings trained on a large language corpus.
 
+## Required R packages
+
+The following R packages are required:
+
+```{r}
+#| message: false
+require(quanteda)
+require(lsa)
+require(rsparse)
+require(sweater)
+```
+
 ## Cosine distance
 
 Suppose we have the following corpus of 10 documents:
@@ -87,7 +99,7 @@ cosine(doc1, doc2)
 Or using `quanteda` [@benoit:2018]
 
 ```{r quanteda}
-require(quanteda)
+library(quanteda)
 docs <- c("berlin is the capital of germany",
           "paris is the capital of france",
           "tokyo is the capital of japan",
@@ -207,7 +219,7 @@ We can train our own word embeddings. But there are also several pretrained word
 In the following example, we will use the pretrained GLoVe word embeddings to replicate the findings by @caliskan:2017:S and pretrained word2vec word embeddings to replicate the findings from @garg:2018:W. The R package `sweater` [@chan:2022] can be used to read the downloaded word embedding file.
 
 ```r
-require(sweater)
+library(sweater)
 glove <- read_word2vec("glove.840B.300d.txt")
 ```
 
@@ -265,7 +277,6 @@ The effect size can be interpreted the same way as Cohen's d. In this case, the 
 @garg:2018:W use Relative Norm Distance to quantify gender biases of occupation words in the pretrained Google News Word Embeddings. The method requires one set of target words and two sets of attribute words.
 
 ```{r garg2}
-require(sweater)
 S1 <- c("janitor", "statistician", "midwife", "bailiff", "auctioneer", 
 "photographer", "geologist", "shoemaker", "athlete", "cashier", 
 "dancer", "housekeeper", "accountant", "physicist", "gardener", 
