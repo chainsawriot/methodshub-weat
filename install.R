@@ -1,4 +1,4 @@
-install.package(quanteda)
-install.package(lsa)
-install.package(rsparse)
-install.package(sweater)
+install.packages(quanteda)
+install.packages(lsa)
+install.packages(rsparse)
+install.packages(sweater)
