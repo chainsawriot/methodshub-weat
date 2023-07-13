@@ -1,4 +1,6 @@
-install.package(quanteda)
-install.package(lsa)
-install.package(rsparse)
-install.package(sweater)
+install.packages(c(
+    "quanteda",
+    "lsa",
+    "rsparse",
+    "sweater"
+))
