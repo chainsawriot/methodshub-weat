@@ -75,7 +75,7 @@ $$
 For example, the cosine similarity between *Doc 1* `[1,1,1,1,1,1,0,0,0,0,0,0,0]` and *Doc 2* `[0,1,1,1,1,0,1,1,0,0,0,0,0]` is:
 
 $$
-\begin{align}
+\begin{aligned}
 \mathbf{A} \cdot \mathbf{B} &= 1 \times 0 + 1 \times 1 + 1 \times 1 +1 \times 1 +1 \times 1 + 1 \times 0 + 0 \times 1 + 0 \times 1 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 + 0 \times 0 \\
 &= 4\\
 \|\mathbf{A}\| &= \sqrt{1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2 + 0^2} \\
@@ -84,7 +84,7 @@ $$
 &= \sqrt{6}\\
 \cos(\theta) &= { 4 \over \sqrt{6} \times \sqrt{6}}\\
 &= 0.\overline{6}
-\end{align}
+\end{aligned}
 $$
 
 In R, `lsa` [@lsarpackage] can be used to calculate cosine similarity.
