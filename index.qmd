@@ -3,7 +3,7 @@ title: Quantifying implicit associations among words using word embeddings
 author: Chung-hong Chan (GESIS)
 bibliography: references.bib
 csl: apa.csl
-format: gfm
+format: html
 ---
 
 ```{r}
