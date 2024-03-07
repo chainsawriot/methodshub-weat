@@ -11,11 +11,17 @@ format: html
 set.seed(721831)
 ```
 
-## Empowerment statement
+## Learning Objectives
 
-In this Methods Hub entry, I am going to show you how to test for implicit associations using word embeddings trained on a large language corpus.
+By the end of this tutorial, you will be able to
 
-## Required R packages
+1. Train your own word embeddings from scratch
+2. Test for implicit associations using word embeddings trained on a large language corpus
+
+## Target audience
+This tutorial is aimed at beginners with some knowledge in R.
+
+## Setting up the computational environment
 
 The following R packages are required:
 
@@ -27,7 +33,17 @@ require(rsparse)
 require(sweater)
 ```
 
-## Cosine distance
+## Duration
+
+Around 15 minutes
+
+## Social Science Usecase(s)
+
+This method has been used in previous studies to evaluate implicit biases against minority groups in large news corpora [e.g. @mueller:2023:DRN].
+
+## Basic concepts
+
+### Cosine distance
 
 Suppose we have the following corpus of 10 documents:
 
@@ -127,7 +143,7 @@ doc6 <- c(0,1,0,0,0,0,1,0,0,0,0,0,1)
 cosine(doc1, doc6)
 ```
 
-## One-hot vectors
+### One-hot vectors
 
 In the traditional "bag of words" text representation, a word is presented as a so-called "one-hot" vector. In the above example, the fifth document has just one word of "berlin". This document is represented as row vector `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the document-term matrix. This vector is sparse (many zeros). One can also reason it as the "one-hot" vector representation of the word "berlin", because there is exactly one instance of "1" in the entire vector. One-hot vector representation of word is not very useful for comparison between **words**. For example, cosine similarity of "one-hot" vectors of two different words is always 0.
 
@@ -148,7 +164,7 @@ cosine(c(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
 
 However, we should anticipate that "berlin" and "paris" should be more similar in latent meaning (at least both of them are described in the context of "capital") than "berlin" and "cat".
 
-## (Dense) word vectors
+### (Dense) word vectors
 
 An improvement to this is to make them "dense" word vectors. One way is to train word embeddings on the corpus in order to generate dense word vectors. Word embeddings can capture the **distributional semantics** of words: words that are used and occur in the same contexts tend to purport similar meanings.
 
@@ -198,7 +214,7 @@ cosine(dense_vectors["berlin",], dense_vectors["paris",])
 cosine(dense_vectors["berlin",], dense_vectors["cat",])
 ```
 
-## Target words and attribute words
+### Target words and attribute words
 
 Suppose "paris", "tokyo", and "berlin" are the words we are interested in. We can called these words *target words*. We can determine how these words are similar to some other words in the word embeddings space. Suppose we set "nice" to be the attribute word. By determining the similarities between the target words and attribute words, we can see the implicit association between words. In this example, we can see that "paris" is highly associated with "nice"; but not "tokyo" and "berlin".
 
@@ -208,7 +224,7 @@ cosine(dense_vectors["tokyo",], dense_vectors["nice",])
 cosine(dense_vectors["berlin",], dense_vectors["nice",])
 ```
 
-## Pretrained word embeddings
+### Pretrained word embeddings
 
 We can train our own word embeddings. But there are also several pretrained word embeddings trained on large corpora available for download.
 
@@ -315,7 +331,7 @@ plot(res)
 
 ## Conclusion
 
-In this entry, I showed you how the quantification of implicit association among words works. The R package `sweater` was introduced for this task.
+In this tutorial, I showed you how the quantification of implicit association among words works. The R package `sweater` was introduced for this task.
 
 ## References
 
