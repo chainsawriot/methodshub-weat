@@ -3,7 +3,9 @@ title: Quantifying implicit associations among words using word embeddings
 author: Chung-hong Chan (GESIS)
 bibliography: references.bib
 csl: apa.csl
-format: html
+format:
+  html: default
+  ipynb: default
 ---
 
 ```{r}
@@ -147,16 +149,25 @@ cosine(doc1, doc6)
 
 In the traditional "bag of words" text representation, a word is presented as a so-called "one-hot" vector. In the above example, the fifth document has just one word of "berlin". This document is represented as row vector `[1,0,0,0,0,0,0,0,0,0,0,0,0]` in the document-term matrix. This vector is sparse (many zeros). One can also reason it as the "one-hot" vector representation of the word "berlin", because there is exactly one instance of "1" in the entire vector. One-hot vector representation of word is not very useful for comparison between **words**. For example, cosine similarity of "one-hot" vectors of two different words is always 0.
 
-```{r allzero}
+```{r allzero1}
 ## comparing "berlin" and "paris"
 cosine(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
        c(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0))
+```
+
+```{r allzero2}
 ## comparing "berlin" and "cat"
 cosine(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
        c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0))
+```
+
+```{r allzero3}
 ## comparing "berlin" and "nice"
 cosine(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
        c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
+```
+
+```{r allzero4}
 ## comparing "paris" and "nice"
 cosine(c(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
        c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
@@ -181,6 +192,7 @@ WINDOW_SIZE <- 3
 weighted_fcm_corpus <- corpus(docs) %>% tokens() %>%
     fcm(window = WINDOW_SIZE, weights = 1 / seq_len(WINDOW_SIZE),
         count = "weighted", context = "window", tri = TRUE)
+
 weighted_fcm_corpus
 ```
 
@@ -209,8 +221,11 @@ dense_vectors
 
 And the row vectors can be compared using cosine similarity. Now, we can see that the similarity between "berlin" and "paris" is higher than "berlin" and "cat".
 
-```{r dist}
+```{r dist1}
 cosine(dense_vectors["berlin",], dense_vectors["paris",])
+```
+
+```{r dist2}
 cosine(dense_vectors["berlin",], dense_vectors["cat",])
 ```
 
@@ -218,9 +233,15 @@ cosine(dense_vectors["berlin",], dense_vectors["cat",])
 
 Suppose "paris", "tokyo", and "berlin" are the words we are interested in. We can called these words *target words*. We can determine how these words are similar to some other words in the word embeddings space. Suppose we set "nice" to be the attribute word. By determining the similarities between the target words and attribute words, we can see the implicit association between words. In this example, we can see that "paris" is highly associated with "nice"; but not "tokyo" and "berlin".
 
-```{r sa}
+```{r sa1}
 cosine(dense_vectors["paris",], dense_vectors["nice",])
+```
+
+```{r sa2}
 cosine(dense_vectors["tokyo",], dense_vectors["nice",])
+```
+
+```{r sa3}
 cosine(dense_vectors["berlin",], dense_vectors["nice",])
 ```
 
