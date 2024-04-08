@@ -4,3 +4,6 @@ install.packages(c(
     "rsparse",
     "sweater"
 ))
+
+## rstudio/rstudio#9861
+install.packages("markdown")
