@@ -1,3 +1,4 @@
 all:
 	quarto render
-	quarto render --to ipynb
+	quarto convert index.qmd
+

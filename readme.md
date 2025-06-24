@@ -1,6 +1,6 @@
 # Quantifying implicit associations among words using word embeddings
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/chainsawriot/methodshub-weat/HEAD)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/chainsawriot/methodshub-weat/HEAD?urlpath=%2Fdoc%2Ftree%2Findex.ipynb)
 
 # Notes
 

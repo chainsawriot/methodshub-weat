@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  [Tutorial] Quantifying implicit associations among words
+  using word embeddings
+message: >-
+  If you use this tutorial, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Chung-hong
+    family-names: Chan
+    email: chung-hong.chan@gesis.org
+    affiliation: GESIS
+    orcid: 'https://orcid.org/0000-0002-6232-7530'
+identifiers:
+  - type: url
+    value: 'https://github.com/chainsawriot/methodshub-weat'
+repository-code: 'https://github.com/chainsawriot/methodshub-weat'
+license: EUPL-1.2

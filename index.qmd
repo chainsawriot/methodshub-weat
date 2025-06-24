@@ -1,11 +1,21 @@
 ---
 title: Quantifying implicit associations among words using word embeddings
-author: Chung-hong Chan (GESIS)
+author:
+  - name: Chung-hong Chan
+    email: chung-hong.chan@gesis.org
+    orcid: 0000-0002-6232-7530
+    affiliations:
+      - name: GESIS - Leibniz Institute for the Social Sciences
 bibliography: references.bib
 csl: apa.csl
 format:
   html: default
   ipynb: default
+jupyter:
+  kernelspec:
+    name: "ir"
+    language: "R"
+    display_name: "R"
 ---
 
 ```{r}
